@@ -23,6 +23,19 @@ namespace CefSharpChromiumWebBrowser
             }
         }
 
+        private string _result;
+
+        public string Result
+        {
+            get => _result;
+            set
+            {
+                _result = value;
+                OnPropertyChanged(nameof(Result));
+            }
+        }
+
+
         public ICommand CommandRun { get; } 
 
         public MainWindowViewModel()
@@ -30,7 +43,7 @@ namespace CefSharpChromiumWebBrowser
             Text = "Test";
             CommandRun = new RelayCommand(x =>
             {
-                MessageBox.Show("hello");
+                Result = DateTime.Now.ToString();
             });
     }
 

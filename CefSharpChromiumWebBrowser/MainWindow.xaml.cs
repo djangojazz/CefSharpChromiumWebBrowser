@@ -19,39 +19,53 @@ namespace CefSharpChromiumWebBrowser
     /// <summary>
     /// Interaction logic for MainWindow.xaml
     /// </summary>
-    public partial class MainWindow : Window
+    public partial class MainWindow : Window, IContextMenuHandler
     {
-        private BrowserContextMenuHandler _contextMenuHandler = new BrowserContextMenuHandler();
+        //private BrowserContextMenuHandler _contextMenuHandler = new BrowserContextMenuHandler();
+        private MainWindowViewModel _vm;
 
         public MainWindow()
         {
             InitializeComponent();
-            DataContext = new MainWindowViewModel();
-            CefSharpSettings.LegacyJavascriptBindingEnabled = true;
-
-            //ChromiumBrowser.ContextMenu = BrowserContextMenu;
-            //ChromiumBrowser.MenuHandler = _contextMenuHandler;
-            this.Loaded += RunwayAnalysisChromiumControl_Loaded;
+            _vm = new MainWindowViewModel();
+            DataContext = _vm;
+            browser.MenuHandler = this;
         }
 
-        private void RunwayAnalysisChromiumControl_Loaded(object sender, RoutedEventArgs e)
+        public void OnBeforeContextMenu(IWebBrowser browserControl, IBrowser browser, IFrame frame, IContextMenuParams parameters, IMenuModel model)
         {
-            //RunwayAnalysisWebViewModel vm = DataContext as RunwayAnalysisWebViewModel;
-            //if (vm != null)
-            //{
-            //    vm.InitializeBrowser(ChromiumBrowser);
-            //}
+            model.Clear();
+            model.AddItem((CefMenuCommand)26501, "RunTest");
+        }
+
+        public bool OnContextMenuCommand(IWebBrowser browserControl, IBrowser browser, IFrame frame, IContextMenuParams parameters, CefMenuCommand commandId, CefEventFlags eventFlags)
+        {
+            // React to the first ID (show dev tools method)
+            if (commandId == (CefMenuCommand)26501)
+            {
+                _vm.CommandRun.Execute(null);
+            }
+
+            return true;
+        }
+
+        public void OnContextMenuDismissed(IWebBrowser browserControl, IBrowser browser, IFrame frame)
+        {
+        }
+
+        public bool RunContextMenu(IWebBrowser browserControl, IBrowser browser, IFrame frame, IContextMenuParams parameters, IMenuModel model, IRunContextMenuCallback callback)
+        {
+            return false;
         }
     }
 
+    //Taken from RunwayAnalysis, use as example
     public class BrowserContextMenuHandler : IContextMenuHandler
     {
         private bool _devToolsVisible = false;
         public void OnBeforeContextMenu(IWebBrowser browserControl, IBrowser browser, IFrame frame, IContextMenuParams parameters, IMenuModel model)
         {
-            model.AddItem((CefMenuCommand)103, "Reload");
-            model.AddItem((CefMenuCommand)26501, "DevTools");
-            model.AddItem((CefMenuCommand)220, "Javascript test");
+            model.AddItem((CefMenuCommand)26501, "RunTest");
         }
 
         public bool OnContextMenuCommand(IWebBrowser browserControl, IBrowser browser, IFrame frame, IContextMenuParams parameters, CefMenuCommand commandId, CefEventFlags eventFlags)
@@ -73,22 +87,22 @@ namespace CefSharpChromiumWebBrowser
             }
 
 
-            // React to the third ID (Display alert message)
-            if (commandId == (CefMenuCommand)103)
-            {
-                browser.Reload(true);
-                return true;
-            }
+            //// React to the third ID (Display alert message)
+            //if (commandId == (CefMenuCommand)103)
+            //{
+            //    browser.Reload(true);
+            //    return true;
+            //}
 
-            if (commandId == (CefMenuCommand)220)
-            {
-                List<long> frameIds = browser.GetFrameIdentifiers();
-                if (frameIds.Count > 0)
-                {
-                    browser.GetFrame(frameIds[0]).ExecuteJavaScriptAsync("alert('javascript test');");
-                }
-                return true;
-            }
+            //if (commandId == (CefMenuCommand)220)
+            //{
+            //    List<long> frameIds = browser.GetFrameIdentifiers();
+            //    if (frameIds.Count > 0)
+            //    {
+            //        browser.GetFrame(frameIds[0]).ExecuteJavaScriptAsync("alert('javascript test');");
+            //    }
+            //    return true;
+            //}
 
 
             // Ignore anything we did not explicitly handle.

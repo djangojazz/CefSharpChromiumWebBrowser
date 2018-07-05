@@ -12,18 +12,19 @@
             <RowDefinition Height="25" />
             <RowDefinition Height="*" />
             <RowDefinition Height="25" />
+            <RowDefinition Height="25" />
         </Grid.RowDefinitions>
         <TextBox Text="{Binding Text}" />
-        <Label Grid.Row="1" Content="{Binding Text}" />
-        <Button Grid.Row="2" Content="Run" Command="{Binding CommandRun}" />
-        <!--<cefSharp:ChromiumWebBrowser VerticalAlignment="Stretch" HorizontalAlignment="Stretch"  x:Name="ChromiumBrowser" Address="http://www.google.com">
-            <FrameworkElement.ContextMenu>
+        <cefSharp:ChromiumWebBrowser Grid.Row="1" x:Name="browser" Address="http://www.google.com">
+            <!--<FrameworkElement.ContextMenu>
                 <ContextMenu>
-                    <MenuItem Header="Back"
-                                      Command="{Binding WebBrowser.BackCommand}" />
+                    <MenuItem Header="Back" Command="{Binding WebBrowser.BackCommand}" />
                 </ContextMenu>
-            </FrameworkElement.ContextMenu>
-        </cefSharp:ChromiumWebBrowser>-->
+            </FrameworkElement.ContextMenu>-->
+        </cefSharp:ChromiumWebBrowser>
+        <Label Grid.Row="2" Content="{Binding Result}" />
+        <Button Grid.Row="3" Content="Run" Command="{Binding CommandRun}" />
+        
         
     </Grid>
 </Window>
