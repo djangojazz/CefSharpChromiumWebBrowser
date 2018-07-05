@@ -4,10 +4,26 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:CefSharpChromiumWebBrowser"
+        xmlns:cefSharp="clr-namespace:CefSharp.Wpf;assembly=CefSharp.Wpf"
         mc:Ignorable="d"
         Title="MainWindow" Height="450" Width="800">
     <Grid>
-        
+        <Grid.RowDefinitions>
+            <RowDefinition Height="25" />
+            <RowDefinition Height="*" />
+            <RowDefinition Height="25" />
+        </Grid.RowDefinitions>
+        <TextBox Text="{Binding Text}" />
+        <Label Grid.Row="1" Content="{Binding Text}" />
+        <Button Grid.Row="2" Content="Run" Command="{Binding CommandRun}" />
+        <!--<cefSharp:ChromiumWebBrowser VerticalAlignment="Stretch" HorizontalAlignment="Stretch"  x:Name="ChromiumBrowser" Address="http://www.google.com">
+            <FrameworkElement.ContextMenu>
+                <ContextMenu>
+                    <MenuItem Header="Back"
+                                      Command="{Binding WebBrowser.BackCommand}" />
+                </ContextMenu>
+            </FrameworkElement.ContextMenu>
+        </cefSharp:ChromiumWebBrowser>-->
         
     </Grid>
 </Window>
