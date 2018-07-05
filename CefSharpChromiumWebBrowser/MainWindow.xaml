@@ -18,7 +18,7 @@
         <cefSharp:ChromiumWebBrowser Grid.Row="1" x:Name="browser" Address="http://www.google.com">
             <!--<FrameworkElement.ContextMenu>
                 <ContextMenu>
-                    <MenuItem Header="Back" Command="{Binding WebBrowser.BackCommand}" />
+                    <MenuItem Header="Run It for De" Command="{Binding CommandRun}" />
                 </ContextMenu>
             </FrameworkElement.ContextMenu>-->
         </cefSharp:ChromiumWebBrowser>

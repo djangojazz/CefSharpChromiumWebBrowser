@@ -1,4 +1,5 @@
 ﻿using CefSharp;
+using CefSharp.Wpf;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -19,7 +20,7 @@ namespace CefSharpChromiumWebBrowser
     /// <summary>
     /// Interaction logic for MainWindow.xaml
     /// </summary>
-    public partial class MainWindow : Window, IContextMenuHandler
+    public partial class MainWindow : Window
     {
         //private BrowserContextMenuHandler _contextMenuHandler = new BrowserContextMenuHandler();
         private MainWindowViewModel _vm;
@@ -29,94 +30,52 @@ namespace CefSharpChromiumWebBrowser
             InitializeComponent();
             _vm = new MainWindowViewModel();
             DataContext = _vm;
-            browser.MenuHandler = this;
-        }
+            browser.MenuHandler = new BrowserContextMenuHandler(menu =>
+                {
+                    menu.Clear();
+                    menu.AddItem((CefMenuCommand)26501, "Run Test for De");
+                    menu.AddSeparator();
+                    menu.AddItem((CefMenuCommand)26502, "Hello");
+                },
+                commandId =>
+                {
+                    if (commandId == (CefMenuCommand)26501)
+                        _vm.CommandRun.Execute(null);
 
-        public void OnBeforeContextMenu(IWebBrowser browserControl, IBrowser browser, IFrame frame, IContextMenuParams parameters, IMenuModel model)
-        {
-            model.Clear();
-            model.AddItem((CefMenuCommand)26501, "RunTest");
-        }
+                    if (commandId == (CefMenuCommand)26502)
+                        MessageBox.Show("Hello there");
 
-        public bool OnContextMenuCommand(IWebBrowser browserControl, IBrowser browser, IFrame frame, IContextMenuParams parameters, CefMenuCommand commandId, CefEventFlags eventFlags)
-        {
-            // React to the first ID (show dev tools method)
-            if (commandId == (CefMenuCommand)26501)
-            {
-                _vm.CommandRun.Execute(null);
-            }
-
-            return true;
-        }
-
-        public void OnContextMenuDismissed(IWebBrowser browserControl, IBrowser browser, IFrame frame)
-        {
-        }
-
-        public bool RunContextMenu(IWebBrowser browserControl, IBrowser browser, IFrame frame, IContextMenuParams parameters, IMenuModel model, IRunContextMenuCallback callback)
-        {
-            return false;
+                    return true;
+                });
         }
     }
-
-    //Taken from RunwayAnalysis, use as example
+    
     public class BrowserContextMenuHandler : IContextMenuHandler
     {
-        private bool _devToolsVisible = false;
-        public void OnBeforeContextMenu(IWebBrowser browserControl, IBrowser browser, IFrame frame, IContextMenuParams parameters, IMenuModel model)
+        private Action<IMenuModel> _menu;
+        private Func<CefMenuCommand, bool> _menuCommands;
+
+        public BrowserContextMenuHandler(Action<IMenuModel> menu, Func<CefMenuCommand, bool> menuCommands)
         {
-            model.AddItem((CefMenuCommand)26501, "RunTest");
+            _menu = menu;
+            _menuCommands = menuCommands;
         }
+        
+        public void OnBeforeContextMenu(IWebBrowser browserControl, IBrowser browser, IFrame frame, IContextMenuParams parameters, IMenuModel model) =>
+            _menu(model);
 
-        public bool OnContextMenuCommand(IWebBrowser browserControl, IBrowser browser, IFrame frame, IContextMenuParams parameters, CefMenuCommand commandId, CefEventFlags eventFlags)
-        {
-            // React to the first ID (show dev tools method)
-            if (commandId == (CefMenuCommand)26501)
-            {
-                if (!_devToolsVisible)
-                {
-                    browser.GetHost().ShowDevTools();
-                    _devToolsVisible = true;
-                }
-                else
-                {
-                    browser.GetHost().CloseDevTools();
-                    _devToolsVisible = false;
-                }
-                return true;
-            }
-
-
-            //// React to the third ID (Display alert message)
-            //if (commandId == (CefMenuCommand)103)
-            //{
-            //    browser.Reload(true);
-            //    return true;
-            //}
-
-            //if (commandId == (CefMenuCommand)220)
-            //{
-            //    List<long> frameIds = browser.GetFrameIdentifiers();
-            //    if (frameIds.Count > 0)
-            //    {
-            //        browser.GetFrame(frameIds[0]).ExecuteJavaScriptAsync("alert('javascript test');");
-            //    }
-            //    return true;
-            //}
-
-
-            // Ignore anything we did not explicitly handle.
-            return true;
-        }
+        public bool OnContextMenuCommand(IWebBrowser browserControl, IBrowser browser, IFrame frame, IContextMenuParams parameters, CefMenuCommand commandId, CefEventFlags eventFlags) => _menuCommands(commandId);
 
         public void OnContextMenuDismissed(IWebBrowser browserControl, IBrowser browser, IFrame frame)
         {
+            var chromiumWebBrowser = (ChromiumWebBrowser)browserControl;
 
+            chromiumWebBrowser.Dispatcher.Invoke(() =>
+            {
+                chromiumWebBrowser.ContextMenu = null;
+            });
         }
 
-        public bool RunContextMenu(IWebBrowser browserControl, IBrowser browser, IFrame frame, IContextMenuParams parameters, IMenuModel model, IRunContextMenuCallback callback)
-        {
-            return false;
-        }
+        public bool RunContextMenu(IWebBrowser browserControl, IBrowser browser, IFrame frame, IContextMenuParams parameters, IMenuModel model, IRunContextMenuCallback callback) => false;
     }
 }
