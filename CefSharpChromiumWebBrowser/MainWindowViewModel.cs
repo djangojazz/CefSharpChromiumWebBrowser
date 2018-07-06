@@ -15,7 +15,6 @@ namespace CefSharpChromiumWebBrowser
     {
         private string _text;
         private string _result;
-        private ChromiumWebBrowser _chromiumWebBrowser;
         
         public ICommand CommandRun { get; } 
 
@@ -54,24 +53,27 @@ namespace CefSharpChromiumWebBrowser
         {
             set
             {
-                _chromiumWebBrowser = value;
-                _chromiumWebBrowser.MenuHandler = new BrowserContextMenuHandler(menu =>
+                //_chromiumWebBrowser = value;
+                if (value != null)
                 {
-                    menu.Clear();
-                    menu.AddItem((CefMenuCommand)26501, "Run Test for VM");
-                    menu.AddSeparator();
-                    menu.AddItem((CefMenuCommand)26502, "Hello");
-                },
-                commandId =>
-                {
-                    if (commandId == (CefMenuCommand)26501)
-                        CommandRun.Execute(null);
+                    value.MenuHandler = new BrowserContextMenuHandler(menu =>
+                    {
+                        menu.Clear();
+                        menu.AddItem((CefMenuCommand)26501, "Run Test for VM");
+                        menu.AddSeparator();
+                        menu.AddItem((CefMenuCommand)26502, "Hello");
+                    },
+                    commandId =>
+                    {
+                        if (commandId == (CefMenuCommand)26501)
+                            CommandRun.Execute(null);
 
-                    if (commandId == (CefMenuCommand)26502)
-                        MessageBox.Show("Hello there");
+                        if (commandId == (CefMenuCommand)26502)
+                            MessageBox.Show("Hello there");
 
-                    return true;
-                });
+                        return true;
+                    });
+                }
             }
         }
 
