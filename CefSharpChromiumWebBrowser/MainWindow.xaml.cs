@@ -23,30 +23,14 @@ namespace CefSharpChromiumWebBrowser
     public partial class MainWindow : Window
     {
         //private BrowserContextMenuHandler _contextMenuHandler = new BrowserContextMenuHandler();
-        private MainWindowViewModel _vm;
+        //private MainWindowViewModel _vm;
 
         public MainWindow()
         {
             InitializeComponent();
-            _vm = new MainWindowViewModel();
-            DataContext = _vm;
-            browser.MenuHandler = new BrowserContextMenuHandler(menu =>
-                {
-                    menu.Clear();
-                    menu.AddItem((CefMenuCommand)26501, "Run Test for De");
-                    menu.AddSeparator();
-                    menu.AddItem((CefMenuCommand)26502, "Hello");
-                },
-                commandId =>
-                {
-                    if (commandId == (CefMenuCommand)26501)
-                        _vm.CommandRun.Execute(null);
-
-                    if (commandId == (CefMenuCommand)26502)
-                        MessageBox.Show("Hello there");
-
-                    return true;
-                });
+            var vm = new MainWindowViewModel();
+            DataContext = vm;
+            vm.ChromiumWebBrowser = browser;
         }
     }
     
@@ -61,21 +45,12 @@ namespace CefSharpChromiumWebBrowser
             _menuCommands = menuCommands;
         }
         
-        public void OnBeforeContextMenu(IWebBrowser browserControl, IBrowser browser, IFrame frame, IContextMenuParams parameters, IMenuModel model) =>
-            _menu(model);
+        public void OnBeforeContextMenu(IWebBrowser browserControl, IBrowser browser, IFrame frame, IContextMenuParams parameters, IMenuModel model) => _menu(model);
 
         public bool OnContextMenuCommand(IWebBrowser browserControl, IBrowser browser, IFrame frame, IContextMenuParams parameters, CefMenuCommand commandId, CefEventFlags eventFlags) => _menuCommands(commandId);
 
-        public void OnContextMenuDismissed(IWebBrowser browserControl, IBrowser browser, IFrame frame)
-        {
-            var chromiumWebBrowser = (ChromiumWebBrowser)browserControl;
-
-            chromiumWebBrowser.Dispatcher.Invoke(() =>
-            {
-                chromiumWebBrowser.ContextMenu = null;
-            });
-        }
-
+        public void OnContextMenuDismissed(IWebBrowser browserControl, IBrowser browser, IFrame frame) => ((ChromiumWebBrowser)browserControl).Dispatcher.Invoke(() => ((ChromiumWebBrowser)browserControl).ContextMenu = null);
+        
         public bool RunContextMenu(IWebBrowser browserControl, IBrowser browser, IFrame frame, IContextMenuParams parameters, IMenuModel model, IRunContextMenuCallback callback) => false;
     }
 }
