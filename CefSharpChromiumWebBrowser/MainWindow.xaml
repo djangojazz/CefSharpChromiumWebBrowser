@@ -16,13 +16,7 @@
             <RowDefinition Height="25" />
         </Grid.RowDefinitions>
         <TextBox Text="{Binding Text}" />
-        <cefSharp:ChromiumWebBrowser Grid.Row="1" x:Name="browser" Address="http://www.google.com">
-            <!--<FrameworkElement.ContextMenu>
-                <ContextMenu>
-                    <MenuItem Header="Run It for De" Command="{Binding CommandRun}" />
-                </ContextMenu>
-            </FrameworkElement.ContextMenu>-->
-        </cefSharp:ChromiumWebBrowser>
+        <cefSharp:ChromiumWebBrowser Grid.Row="1" x:Name="browser" Address="http://www.google.com" PreviewMouseRightButtonDown="browser_PreviewMouseRightButtonDown" />
         <Label Grid.Row="2" Content="{Binding Result}" />
         <Button Grid.Row="3" Content="Run" Command="{Binding CommandRun}" />
         

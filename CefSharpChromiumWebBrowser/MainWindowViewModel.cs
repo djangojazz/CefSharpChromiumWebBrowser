@@ -47,37 +47,7 @@ namespace CefSharpChromiumWebBrowser
                 OnPropertyChanged(nameof(Result));
             }
         }
-
-        //This really ONLY exists to perform invocation of the Context Menu Builder implementation
-        public ChromiumWebBrowser ChromiumWebBrowser
-        {
-            set
-            {
-                //_chromiumWebBrowser = value;
-                if (value != null)
-                {
-                    value.MenuHandler = new BrowserContextMenuHandler(menu =>
-                    {
-                        menu.Clear();
-                        menu.AddItem((CefMenuCommand)26501, "Run Test for VM");
-                        menu.AddSeparator();
-                        menu.AddItem((CefMenuCommand)26502, "Hello");
-                    },
-                    commandId =>
-                    {
-                        if (commandId == (CefMenuCommand)26501)
-                            CommandRun.Execute(null);
-
-                        if (commandId == (CefMenuCommand)26502)
-                            MessageBox.Show("Hello there");
-
-                        return true;
-                    });
-                }
-            }
-        }
-
-
+        
         public event PropertyChangedEventHandler PropertyChanged;
 
         protected void OnPropertyChanged(String info) => 
